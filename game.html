@@ -252,4 +252,51 @@ function chooseHand(choice){
       resultText = "🤝 It's a draw!";
       document.getElementById("drawSound").play();
       winStreak = 0;
-   
+    } else if(
+      (playerChoiceGlobal==="rock" && computerChoice==="scissors")||
+      (playerChoiceGlobal==="paper" && computerChoice==="rock")||
+      (playerChoiceGlobal==="scissors" && computerChoice==="paper")
+    ){
+      resultText = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
+      document.getElementById("winSound").play();
+      playerScore++;
+      winStreak++;
+    } else {
+      resultText = `😢 You Lose! ${computerChoice} beats ${playerChoiceGlobal}`;
+      document.getElementById("loseSound").play();
+      computerScore++;
+      winStreak = 0;
+    }
+
+    document.getElementById("result").innerText = resultText;
+    document.getElementById("playerScore").innerText = playerScore;
+    document.getElementById("computerScore").innerText = computerScore;
+    document.getElementById("funMessage").innerText = winStreak>1 ? `🔥 Streak: ${winStreak}!` : funMessage;
+
+    // Celebration for milestones
+    if(playerScore>0 && playerScore%5===0){
+      document.getElementById("result").classList.add("celebration");
+    } else {
+      document.getElementById("result").classList.remove("celebration");
+    }
+
+    // Reset for next round
+    setTimeout(()=>{
+      document.getElementById("selectionStage").classList.remove("hidden");
+      document.getElementById("vsStage").classList.add("hidden");
+      document.getElementById("result").innerText="";
+      document.getElementById("funMessage").innerText="";
+    },2500);
+  }
+}
+
+// Play background music
+function playMusic(){
+  const music = document.getElementById("bgMusic");
+  if(music.paused) music.play();
+}
+
+document.body.addEventListener("click",()=>{ playMusic(); });
+</script>
+</body>
+</html>
