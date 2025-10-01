@@ -44,12 +44,13 @@
     height: 120px;
     transition: transform 0.2s;
   }
+  /* Adjusted logo size */
   .hand-container img.logo {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 80px;
-    height: 80px;
+    top: 30px;
+    left: 30px;
+    width: 60px;
+    height: 60px;
     pointer-events: none;
   }
 
@@ -130,7 +131,6 @@ let playerChoiceGlobal = "";
 function startGame(playerChoice) {
   playerChoiceGlobal = playerChoice;
 
-  // Hide selection, show VS stage
   document.getElementById("selectionStage").classList.add("hidden");
   document.getElementById("vsStage").classList.remove("hidden");
 
@@ -139,7 +139,6 @@ function startGame(playerChoice) {
   playerHand.src = handImages.rock;
   computerHand.src = handImages.rock;
 
-  // Add shake animation
   playerHand.classList.add("shake");
   computerHand.classList.add("shake");
 
@@ -175,7 +174,6 @@ function startGame(playerChoice) {
     document.getElementById("playerScore").innerText = playerScore;
     document.getElementById("computerScore").innerText = computerScore;
 
-    // Reset for next round
     setTimeout(() => {
       document.getElementById("selectionStage").classList.remove("hidden");
       document.getElementById("vsStage").classList.add("hidden");
@@ -185,7 +183,6 @@ function startGame(playerChoice) {
   }, 600);
 });
 
-// Start music when user clicks
 document.body.addEventListener("click", () => {
   const music = document.getElementById("bgMusic");
   if (music.paused) music.play();
