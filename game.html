@@ -11,26 +11,22 @@
     text-align: center;
     padding: 20px;
   }
-  h1 {
-    color: #00ffcc;
-  }
-  .choices, .vs-stage {
-    margin: 20px;
-  }
+  h1 { color: #00ffcc; }
+  .choices, .vs-stage { margin: 20px; }
   .choice {
     display: inline-block;
     margin: 10px;
     padding: 10px;
     cursor: pointer;
     transition: transform 0.2s;
+    position: relative;
   }
   .choice img {
     width: 100px;
     height: 100px;
   }
-  .choice:hover {
-    transform: scale(1.2);
-  }
+  .choice:hover { transform: scale(1.2); }
+
   .hands {
     display: flex;
     justify-content: center;
@@ -38,11 +34,25 @@
     margin-top: 20px;
     align-items: center;
   }
-  .hands img {
+  .hand-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+  }
+  .hand-container img.hand {
     width: 120px;
     height: 120px;
     transition: transform 0.2s;
   }
+  .hand-container img.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 80px;
+    height: 80px;
+    pointer-events: none;
+  }
+
   .shake {
     animation: shake 0.6s ease-in-out;
   }
@@ -53,15 +63,9 @@
     75% { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
   }
-  #result {
-    font-size: 1.5em;
-    margin-top: 20px;
-    min-height: 40px;
-  }
-  .score-board {
-    margin-top: 20px;
-    font-size: 1.2em;
-  }
+
+  #result { font-size: 1.5em; margin-top: 20px; min-height: 40px; }
+  .score-board { margin-top: 20px; font-size: 1.2em; }
   .hidden { display: none; }
 </style>
 </head>
@@ -71,22 +75,30 @@
 <!-- Stage 1: Player selects -->
 <div class="choices" id="selectionStage">
   <p>Select your hand to start!</p>
-  <div class="choice" onclick="startGame('rock')"><img src="https://img.icons8.com/color/96/000000/hand-rock.png" alt="Rock"></div>
-  <div class="choice" onclick="startGame('paper')"><img src="https://img.icons8.com/color/96/000000/hand.png" alt="Paper"></div>
-  <div class="choice" onclick="startGame('scissors')"><img src="https://img.icons8.com/color/96/000000/hand-scissors.png" alt="Scissors"></div>
+  <div class="choice" onclick="startGame('rock')">
+    <img src="https://i.ibb.co/KV5f0bM/hand-rock.png" alt="Rock">
+  </div>
+  <div class="choice" onclick="startGame('paper')">
+    <img src="https://i.ibb.co/YQhQ7xR/hand-paper.png" alt="Paper">
+  </div>
+  <div class="choice" onclick="startGame('scissors')">
+    <img src="https://i.ibb.co/7k6nY1D/hand-scissors.png" alt="Scissors">
+  </div>
 </div>
 
 <!-- Stage 2: VS -->
 <div class="vs-stage hidden" id="vsStage">
   <h2>Player vs Computer</h2>
   <div class="hands">
-    <div>
+    <div class="hand-container">
       <h3>👤 Player</h3>
-      <img id="playerHand" src="" alt="Player Hand">
+      <img id="playerHand" class="hand" src="" alt="Player Hand">
+      <img class="logo" src="https://i.ibb.co/znrRZ1M/logo.png" alt="Logo">
     </div>
-    <div>
+    <div class="hand-container">
       <h3>🤖 Computer</h3>
-      <img id="computerHand" src="" alt="Computer Hand">
+      <img id="computerHand" class="hand" src="" alt="Computer Hand">
+      <img class="logo" src="https://i.ibb.co/znrRZ1M/logo.png" alt="Logo">
     </div>
   </div>
 </div>
@@ -98,10 +110,7 @@
   <p>Computer Score: <span id="computerScore">0</span></p>
 </div>
 
-<!-- Background Music -->
 <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop></audio>
-
-<!-- Sound Effects -->
 <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 <audio id="loseSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 <audio id="drawSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
@@ -111,9 +120,9 @@ let playerScore = 0;
 let computerScore = 0;
 
 const handImages = {
-  rock: "https://img.icons8.com/color/96/000000/hand-rock.png",
-  paper: "https://img.icons8.com/color/96/000000/hand.png",
-  scissors: "https://img.icons8.com/color/96/000000/hand-scissors.png"
+  rock: "https://i.ibb.co/KV5f0bM/hand-rock.png",
+  paper: "https://i.ibb.co/YQhQ7xR/hand-paper.png",
+  scissors: "https://i.ibb.co/7k6nY1D/hand-scissors.png"
 };
 
 let playerChoiceGlobal = "";
@@ -134,7 +143,6 @@ function startGame(playerChoice) {
   playerHand.classList.add("shake");
   computerHand.classList.add("shake");
 
-  // Delay before showing final hands
   setTimeout(() => {
     playerHand.classList.remove("shake");
     computerHand.classList.remove("shake");
@@ -174,8 +182,8 @@ function startGame(playerChoice) {
       document.getElementById("result").innerText = "";
     }, 2000);
 
-  }, 600); // shake animation duration
-}
+  }, 600);
+});
 
 // Start music when user clicks
 document.body.addEventListener("click", () => {
