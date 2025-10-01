@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    .choices {
+      margin: 20px;
+    }
+    .choice {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .choice:hover {
+      transform: scale(1.2);
+      background: #00ffcc;
+      color: #000;
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 20px;
+      min-height: 40px;
+    }
+    .score-board {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rock Paper Scissors ✊📄✂️</h1>
+  
+  <div class="choices">
+    <div class="choice" onclick="play('rock')">✊ Rock</div>
+    <div class="choice" onclick="play('paper')">📄 Paper</div>
+    <div class="choice" onclick="play('scissors')">✂️ Scissors</div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="score-board">
+    <p>Player Score: <span id="playerScore">0</span></p>
+    <p>Computer Score: <span id="computerScore">0</span></p>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop></audio>
+
+  <!-- Sound Effects -->
+  <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="loseSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+  <audio id="drawSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+
+  <script>
+    let playerScore = 0;
+    let computerScore = 0;
+
+    function play(playerChoice) {
+      const choices = ["rock", "paper", "scissors"];
+      const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+      let result = "";
+      if (playerChoice === computerChoice) {
+        result = "🤝 It's a draw!";
+        document.getElementById("drawSound").play();
+      } else if (
+        (playerChoice === "rock" && computerChoice === "scissors") ||
+        (playerChoice === "paper" && computerChoice === "rock") ||
+        (playerChoice === "scissors" && computerChoice === "paper")
+      ) {
+        result = `🎉 You Win! ${playerChoice} beats ${computerChoice}`;
+        playerScore++;
+        document.getElementById("winSound").play();
+      } else {
+        result = `😢 You Lose! ${computerChoice} beats ${playerChoice}`;
+        computerScore++;
+        document.getElementById("loseSound").play();
+      }
+
+      document.getElementById("result").innerText = result;
+      document.getElementById("playerScore").innerText = playerScore;
+      document.getElementById("computerScore").innerText = computerScore;
+    }
+
+    // Start music when user clicks (to bypass autoplay restrictions)
+    document.body.addEventListener("click", () => {
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play();
+      }
+    });
+  </script>
+</body>
+</html>
