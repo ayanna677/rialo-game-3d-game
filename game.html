@@ -20,21 +20,36 @@
     .choice {
       display: inline-block;
       margin: 10px;
-      padding: 15px 25px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .choice img {
+      width: 100px;
+      height: 100px;
       border: 2px solid #00ffcc;
       border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
+      background: #222;
+      padding: 10px;
     }
     .choice:hover {
       transform: scale(1.2);
-      background: #00ffcc;
-      color: #000;
     }
     #result {
       font-size: 1.5em;
       margin-top: 20px;
       min-height: 40px;
+    }
+    .hands {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-top: 20px;
+      align-items: center;
+    }
+    .hands img {
+      width: 120px;
+      height: 120px;
     }
     .score-board {
       margin-top: 20px;
@@ -46,9 +61,21 @@
   <h1>Rock Paper Scissors ✊📄✂️</h1>
   
   <div class="choices">
-    <div class="choice" onclick="play('rock')">✊ Rock</div>
-    <div class="choice" onclick="play('paper')">📄 Paper</div>
-    <div class="choice" onclick="play('scissors')">✂️ Scissors</div>
+    <div class="choice" onclick="play('rock')"><img src="https://i.imgur.com/TON1M7U.png" alt="Rock"></div>
+    <div class="choice" onclick="play('paper')"><img src="https://i.imgur.com/2gsdqvR.png" alt="Paper"></div>
+    <div class="choice" onclick="play('scissors')"><img src="https://i.imgur.com/pgjyhIZ.png" alt="Scissors"></div>
+  </div>
+
+  <!-- Hands display -->
+  <div class="hands">
+    <div>
+      <h3>👤 Player</h3>
+      <img id="playerHand" src="https://i.imgur.com/TON1M7U.png" alt="Player Hand">
+    </div>
+    <div>
+      <h3>🤖 Computer</h3>
+      <img id="computerHand" src="https://i.imgur.com/TON1M7U.png" alt="Computer Hand">
+    </div>
   </div>
 
   <div id="result"></div>
@@ -70,10 +97,21 @@
     let playerScore = 0;
     let computerScore = 0;
 
+    const handImages = {
+      rock: "https://i.imgur.com/TON1M7U.png",
+      paper: "https://i.imgur.com/2gsdqvR.png",
+      scissors: "https://i.imgur.com/pgjyhIZ.png"
+    };
+
     function play(playerChoice) {
       const choices = ["rock", "paper", "scissors"];
       const computerChoice = choices[Math.floor(Math.random() * 3)];
 
+      // Update hands
+      document.getElementById("playerHand").src = handImages[playerChoice];
+      document.getElementById("computerHand").src = handImages[computerChoice];
+
+      // Decide result
       let result = "";
       if (playerChoice === computerChoice) {
         result = "🤝 It's a draw!";
