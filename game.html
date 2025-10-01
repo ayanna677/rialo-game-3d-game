@@ -19,12 +19,8 @@
     padding: 10px;
     cursor: pointer;
     transition: transform 0.2s;
-    position: relative;
   }
-  .choice img {
-    width: 100px;
-    height: 100px;
-  }
+  .choice img { width: 100px; height: 100px; }
   .choice:hover { transform: scale(1.2); }
 
   .hands {
@@ -34,26 +30,14 @@
     margin-top: 20px;
     align-items: center;
   }
-  .hand-container {
-    position: relative;
-    width: 120px;
-    height: 120px;
-  }
-  .hand-container img.hand {
+  .hand-container { text-align: center; }
+  .hands img {
     width: 120px;
     height: 120px;
     transition: transform 0.2s;
   }
-  /* Adjusted logo size */
-  .hand-container img.logo {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 60px;
-    height: 60px;
-    pointer-events: none;
-  }
 
+  /* Shake animation */
   .shake {
     animation: shake 0.6s ease-in-out;
   }
@@ -64,6 +48,11 @@
     75% { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
   }
+
+  /* Recolor hands based on logo palette */
+  .rock { filter: hue-rotate(200deg) saturate(150%) brightness(1.1); }
+  .paper { filter: hue-rotate(50deg) saturate(200%) brightness(1.2); }
+  .scissors { filter: hue-rotate(100deg) saturate(180%) brightness(1.1); }
 
   #result { font-size: 1.5em; margin-top: 20px; min-height: 40px; }
   .score-board { margin-top: 20px; font-size: 1.2em; }
@@ -93,13 +82,11 @@
   <div class="hands">
     <div class="hand-container">
       <h3>👤 Player</h3>
-      <img id="playerHand" class="hand" src="" alt="Player Hand">
-      <img class="logo" src="https://i.ibb.co/znrRZ1M/logo.png" alt="Logo">
+      <img id="playerHand" src="" alt="Player Hand">
     </div>
     <div class="hand-container">
       <h3>🤖 Computer</h3>
-      <img id="computerHand" class="hand" src="" alt="Computer Hand">
-      <img class="logo" src="https://i.ibb.co/znrRZ1M/logo.png" alt="Logo">
+      <img id="computerHand" src="" alt="Computer Hand">
     </div>
   </div>
 </div>
@@ -139,18 +126,19 @@ function startGame(playerChoice) {
   playerHand.src = handImages.rock;
   computerHand.src = handImages.rock;
 
-  playerHand.classList.add("shake");
-  computerHand.classList.add("shake");
+  playerHand.className = "shake";
+  computerHand.className = "shake";
 
   setTimeout(() => {
-    playerHand.classList.remove("shake");
-    computerHand.classList.remove("shake");
-
     const choices = ["rock", "paper", "scissors"];
     const computerChoice = choices[Math.floor(Math.random() * 3)];
 
     playerHand.src = handImages[playerChoiceGlobal];
     computerHand.src = handImages[computerChoice];
+
+    // Apply colors
+    playerHand.className = playerChoiceGlobal;
+    computerHand.className = computerChoice;
 
     let result = "";
     if (playerChoiceGlobal === computerChoice) {
@@ -174,6 +162,7 @@ function startGame(playerChoice) {
     document.getElementById("playerScore").innerText = playerScore;
     document.getElementById("computerScore").innerText = computerScore;
 
+    // Reset for next round
     setTimeout(() => {
       document.getElementById("selectionStage").classList.remove("hidden");
       document.getElementById("vsStage").classList.add("hidden");
@@ -183,6 +172,7 @@ function startGame(playerChoice) {
   }, 600);
 });
 
+// Start music when user clicks
 document.body.addEventListener("click", () => {
   const music = document.getElementById("bgMusic");
   if (music.paused) music.play();
