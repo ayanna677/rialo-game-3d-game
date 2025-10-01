@@ -2,91 +2,177 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Rock Paper Scissors</title>
+<title>Rock Paper Scissors Game</title>
 <style>
-  body {
-    background: #111;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-  }
-  h1 { color: #00ffcc; }
-  .choices, .vs-stage { margin: 20px; }
-  .choice {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    position: relative;
-  }
-  .choice img, .hands img {
-    width: 100px;
-    height: 100px;
-  }
-  .choice:hover { transform: scale(1.2); }
-  .hands {
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    margin-top: 20px;
-    align-items: center;
-  }
-  .hand-container {
-    position: relative;
-    width: 120px;
-    height: 120px;
-  }
-  .hand-container img.hand {
-    width: 120px;
-    height: 120px;
-    transition: transform 0.2s;
-  }
-  /* Logo colored like hand */
-  .hand-container .logo {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 80px;
-    height: 80px;
-    pointer-events: none;
-    filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(160deg);
-    /* Adjust hue-rotate to match hand color */
-  }
-  .shake { animation: shake 0.6s ease-in-out; }
-  @keyframes shake {
-    0% { transform: translateY(0px); }
-    25% { transform: translateY(-20px); }
-    50% { transform: translateY(0px); }
-    75% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
-  #result { font-size: 1.5em; margin-top: 20px; min-height: 40px; }
-  .score-board { margin-top: 20px; font-size: 1.2em; }
-  .hidden { display: none; }
+/* ================= Global ================= */
+body {
+  background: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+h1 { color: #00ffcc; margin-top: 20px; }
+.hidden { display: none; }
+button {
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: #00ffcc;
+  color: #111;
+  margin-top: 10px;
+  transition: transform 0.2s;
+}
+button:hover { transform: scale(1.1); }
+
+/* ================= Password Screen ================= */
+#passwordScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+#passwordScreen input {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: none;
+  margin-top: 10px;
+}
+#passwordScreen p { color: #ff5555; }
+
+/* ================= Start Screen ================= */
+#startScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+#startScreen h2 { color: #00ffcc; }
+
+/* ================= Selection Stage ================= */
+.choices {
+  margin: 20px;
+}
+.choice {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.choice img {
+  width: 100px;
+  height: 100px;
+}
+.choice:hover { transform: scale(1.2); }
+
+/* ================= VS Stage ================= */
+.vs-stage {
+  margin-top: 20px;
+}
+.hands {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 20px;
+  align-items: center;
+}
+.hand-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.hand-container img.hand {
+  width: 120px;
+  height: 120px;
+  transition: transform 0.2s;
+}
+.hand-container img.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+}
+
+/* ================= Animations ================= */
+@keyframes shake {
+  0% { transform: translateY(0px); }
+  25% { transform: translateY(-20px); }
+  50% { transform: translateY(0px); }
+  75% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+.shake { animation: shake 0.6s ease-in-out; }
+.bounce { animation: bounce 0.5s ease-in-out infinite; }
+
+/* ================= Countdown ================= */
+#countdown {
+  font-size: 2em;
+  margin-top: 10px;
+  color: #00ffcc;
+}
+
+/* ================= Result ================= */
+#result {
+  font-size: 1.5em;
+  margin-top: 20px;
+  min-height: 40px;
+}
+.score-board {
+  margin-top: 20px;
+  font-size: 1.2em;
+}
 </style>
 </head>
 <body>
-<h1>Rock Paper Scissors ✊📄✂️</h1>
 
-<!-- Stage 1: Player selects -->
-<div class="choices" id="selectionStage">
+<h1>🎮 Rock Paper Scissors Game 🎮</h1>
+
+<!-- ===== Password Screen ===== -->
+<div id="passwordScreen">
+  <h2>Enter Password to Start</h2>
+  <input type="password" id="passwordInput" placeholder="Enter password"/>
+  <button onclick="checkPassword()">Unlock</button>
+  <p id="passwordMessage"></p>
+</div>
+
+<!-- ===== Start Screen ===== -->
+<div id="startScreen" class="hidden">
+  <h2>Welcome to Rock Paper Scissors!</h2>
+  <p>Click Start to play against the computer</p>
+  <button onclick="startGameSelection()">Start</button>
+</div>
+
+<!-- ===== Selection Stage ===== -->
+<div class="choices hidden" id="selectionStage">
   <p>Select your hand to start!</p>
-  <div class="choice" onclick="startGame('rock')">
-    <img src="https://img.icons8.com/color/96/000000/hand-rock.png" alt="Rock">
+  <div class="choice" onclick="chooseHand('rock')">
+    <img src="https://i.postimg.cc/9f8nK7tK/rock-logo.png" alt="Rock">
   </div>
-  <div class="choice" onclick="startGame('paper')">
-    <img src="https://img.icons8.com/color/96/000000/hand.png" alt="Paper">
+  <div class="choice" onclick="chooseHand('paper')">
+    <img src="https://i.postimg.cc/SRz2hZyp/paper-logo.png" alt="Paper">
   </div>
-  <div class="choice" onclick="startGame('scissors')">
-    <img src="https://img.icons8.com/color/96/000000/hand-scissors.png" alt="Scissors">
+  <div class="choice" onclick="chooseHand('scissors')">
+    <img src="https://i.postimg.cc/qvH42cWF/scissors-logo.png" alt="Scissors">
   </div>
 </div>
 
-<!-- Stage 2: VS -->
+<!-- ===== VS Stage ===== -->
 <div class="vs-stage hidden" id="vsStage">
   <h2>Player vs Computer</h2>
+  <div id="countdown">1</div>
   <div class="hands">
     <div class="hand-container">
       <h3>👤 Player</h3>
@@ -108,26 +194,45 @@
   <p>Computer Score: <span id="computerScore">0</span></p>
 </div>
 
-<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop></audio>
+<!-- ===== Audio ===== -->
+<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" loop></audio>
 <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 <audio id="loseSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 <audio id="drawSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
 
 <script>
+// ===== Password Screen =====
+function checkPassword() {
+  const password = document.getElementById("passwordInput").value;
+  const message = document.getElementById("passwordMessage");
+  if(password === "rialolala"){
+    document.getElementById("passwordScreen").classList.add("hidden");
+    document.getElementById("startScreen").classList.remove("hidden");
+  } else {
+    message.innerText = "Incorrect password! Try again.";
+  }
+}
+
+// ===== Start Game =====
+function startGameSelection() {
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("selectionStage").classList.remove("hidden");
+  playMusic();
+}
+
+// ===== Global Variables =====
+let playerChoiceGlobal = "";
 let playerScore = 0;
 let computerScore = 0;
-
 const handImages = {
-  rock: "https://img.icons8.com/color/96/000000/hand-rock.png",
-  paper: "https://img.icons8.com/color/96/000000/hand.png",
-  scissors: "https://img.icons8.com/color/96/000000/hand-scissors.png"
+  rock: "https://i.postimg.cc/9f8nK7tK/rock-logo.png",
+  paper: "https://i.postimg.cc/SRz2hZyp/paper-logo.png",
+  scissors: "https://i.postimg.cc/qvH42cWF/scissors-logo.png"
 };
 
-let playerChoiceGlobal = "";
-
-function startGame(playerChoice) {
-  playerChoiceGlobal = playerChoice;
-
+// ===== Hand Selection =====
+function chooseHand(choice){
+  playerChoiceGlobal = choice;
   document.getElementById("selectionStage").classList.add("hidden");
   document.getElementById("vsStage").classList.remove("hidden");
 
@@ -139,51 +244,67 @@ function startGame(playerChoice) {
   playerHand.classList.add("shake");
   computerHand.classList.add("shake");
 
-  setTimeout(() => {
+  // ===== Countdown 1-2-3 =====
+  const countdown = document.getElementById("countdown");
+  let count = 1;
+  countdown.innerText = count;
+  const countdownInterval = setInterval(()=>{
+    count++;
+    if(count>3) { clearInterval(countdownInterval); countdown.innerText=""; showResult(); }
+    else countdown.innerText = count;
+  },600);
+
+  function showResult(){
     playerHand.classList.remove("shake");
     computerHand.classList.remove("shake");
 
     const choices = ["rock","paper","scissors"];
-    const computerChoice = choices[Math.floor(Math.random() * 3)];
+    const computerChoice = choices[Math.floor(Math.random()*3)];
 
     playerHand.src = handImages[playerChoiceGlobal];
     computerHand.src = handImages[computerChoice];
 
-    let result = "";
+    // ===== Result Logic =====
+    let resultText = "";
     if(playerChoiceGlobal === computerChoice){
-      result = "🤝 It's a draw!";
+      resultText = "🤝 It's a draw!";
       document.getElementById("drawSound").play();
-    } else if (
-      (playerChoiceGlobal==="rock" && computerChoice==="scissors") ||
-      (playerChoiceGlobal==="paper" && computerChoice==="rock") ||
+    } else if(
+      (playerChoiceGlobal==="rock" && computerChoice==="scissors")||
+      (playerChoiceGlobal==="paper" && computerChoice==="rock")||
       (playerChoiceGlobal==="scissors" && computerChoice==="paper")
     ){
-      result = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
+      resultText = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
       playerScore++;
       document.getElementById("winSound").play();
     } else {
-      result = `😢 You Lose! ${computerChoice} beats ${playerChoiceGlobal}`;
+      resultText = `😢 You Lose! ${computerChoice} beats ${playerChoiceGlobal}`;
       computerScore++;
       document.getElementById("loseSound").play();
     }
 
-    document.getElementById("result").innerText = result;
+    document.getElementById("result").innerText = resultText;
     document.getElementById("playerScore").innerText = playerScore;
     document.getElementById("computerScore").innerText = computerScore;
 
-    setTimeout(() => {
+    // ===== Reset for Next Round =====
+    setTimeout(()=>{
       document.getElementById("selectionStage").classList.remove("hidden");
       document.getElementById("vsStage").classList.add("hidden");
       document.getElementById("result").innerText = "";
-    }, 2000);
-
-  },600);
+    },2500);
+  }
 }
 
-document.body.addEventListener("click", () => {
+// ===== Play Music =====
+function playMusic(){
   const music = document.getElementById("bgMusic");
   if(music.paused) music.play();
-});
+}
+
+// ===== Click anywhere to start music =====
+document.body.addEventListener("click",()=>{ playMusic(); });
+
 </script>
 </body>
 </html>
