@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Game Entry</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    .box {
+      background: #222;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0px 0px 20px #00ffcc;
+      animation: pulse 2s infinite alternate;
+    }
+    input {
+      padding: 8px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      padding: 10px 20px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    /* Animation effects */
+    @keyframes pulse {
+      from { box-shadow: 0px 0px 10px #00ffcc; }
+      to   { box-shadow: 0px 0px 25px #00ffff; }
+    }
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="box" id="box">
+    <h2>Enter Password to Start Game</h2>
+    <input type="password" id="password" placeholder="Enter password">
+    <br>
+    <button onclick="checkPassword()">Start Game</button>
+    <div class="error" id="error"></div>
+  </div>
+
+  <!-- Background Music (loops forever) -->
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" autoplay loop></audio>
+
+  <!-- Sound effects -->
+  <audio id="successSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="errorSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
+  <script>
+    function checkPassword() {
+      const pass = document.getElementById("password").value;
+      const box = document.getElementById("box");
+      const error = document.getElementById("error");
+
+      if (pass === "rialolala") {
+        document.getElementById("successSound").play();
+        setTimeout(() => {
+          window.location.href = "game.html"; // go to game page
+        }, 1200);
+      } else {
+        error.innerText = "❌ Wrong password!";
+        document.getElementById("errorSound").play();
+        box.style.animation = "shake 0.3s";
+        setTimeout(() => {
+          box.style.animation = "pulse 2s infinite alternate";
+        }, 300);
+      }
+    }
+
+    // Start music when user interacts (for autoplay restrictions on some browsers)
+    document.body.addEventListener("click", () => {
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play();
+      }
+    });
+  </script>
+</body>
+</html>
