@@ -11,12 +11,8 @@
     text-align: center;
     padding: 20px;
   }
-  h1 {
-    color: #00ffcc;
-  }
-  .choices, .vs-stage {
-    margin: 20px;
-  }
+  h1 { color: #00ffcc; }
+  .choices, .vs-stage { margin: 20px; }
   .choice {
     display: inline-block;
     margin: 10px;
@@ -29,9 +25,7 @@
     width: 100px;
     height: 100px;
   }
-  .choice:hover {
-    transform: scale(1.2);
-  }
+  .choice:hover { transform: scale(1.2); }
   .hands {
     display: flex;
     justify-content: center;
@@ -49,17 +43,18 @@
     height: 120px;
     transition: transform 0.2s;
   }
-  .hand-container img.logo {
+  /* Logo colored like hand */
+  .hand-container .logo {
     position: absolute;
     top: 20px;
     left: 20px;
     width: 80px;
     height: 80px;
     pointer-events: none;
+    filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(160deg);
+    /* Adjust hue-rotate to match hand color */
   }
-  .shake {
-    animation: shake 0.6s ease-in-out;
-  }
+  .shake { animation: shake 0.6s ease-in-out; }
   @keyframes shake {
     0% { transform: translateY(0px); }
     25% { transform: translateY(-20px); }
@@ -67,15 +62,8 @@
     75% { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
   }
-  #result {
-    font-size: 1.5em;
-    margin-top: 20px;
-    min-height: 40px;
-  }
-  .score-board {
-    margin-top: 20px;
-    font-size: 1.2em;
-  }
+  #result { font-size: 1.5em; margin-top: 20px; min-height: 40px; }
+  .score-board { margin-top: 20px; font-size: 1.2em; }
   .hidden { display: none; }
 </style>
 </head>
@@ -120,10 +108,7 @@
   <p>Computer Score: <span id="computerScore">0</span></p>
 </div>
 
-<!-- Background Music -->
 <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop></audio>
-
-<!-- Sound Effects -->
 <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 <audio id="loseSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 <audio id="drawSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
@@ -143,7 +128,6 @@ let playerChoiceGlobal = "";
 function startGame(playerChoice) {
   playerChoiceGlobal = playerChoice;
 
-  // Hide selection, show VS stage
   document.getElementById("selectionStage").classList.add("hidden");
   document.getElementById("vsStage").classList.remove("hidden");
 
@@ -152,30 +136,28 @@ function startGame(playerChoice) {
   playerHand.src = handImages.rock;
   computerHand.src = handImages.rock;
 
-  // Add shake animation
   playerHand.classList.add("shake");
   computerHand.classList.add("shake");
 
-  // Delay before showing final hands
   setTimeout(() => {
     playerHand.classList.remove("shake");
     computerHand.classList.remove("shake");
 
-    const choices = ["rock", "paper", "scissors"];
+    const choices = ["rock","paper","scissors"];
     const computerChoice = choices[Math.floor(Math.random() * 3)];
 
     playerHand.src = handImages[playerChoiceGlobal];
     computerHand.src = handImages[computerChoice];
 
     let result = "";
-    if (playerChoiceGlobal === computerChoice) {
+    if(playerChoiceGlobal === computerChoice){
       result = "🤝 It's a draw!";
       document.getElementById("drawSound").play();
     } else if (
-      (playerChoiceGlobal === "rock" && computerChoice === "scissors") ||
-      (playerChoiceGlobal === "paper" && computerChoice === "rock") ||
-      (playerChoiceGlobal === "scissors" && computerChoice === "paper")
-    ) {
+      (playerChoiceGlobal==="rock" && computerChoice==="scissors") ||
+      (playerChoiceGlobal==="paper" && computerChoice==="rock") ||
+      (playerChoiceGlobal==="scissors" && computerChoice==="paper")
+    ){
       result = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
       playerScore++;
       document.getElementById("winSound").play();
@@ -189,20 +171,18 @@ function startGame(playerChoice) {
     document.getElementById("playerScore").innerText = playerScore;
     document.getElementById("computerScore").innerText = computerScore;
 
-    // Reset for next round
     setTimeout(() => {
       document.getElementById("selectionStage").classList.remove("hidden");
       document.getElementById("vsStage").classList.add("hidden");
       document.getElementById("result").innerText = "";
     }, 2000);
 
-  }, 600); // shake animation duration
+  },600);
 }
 
-// Start music when user clicks
 document.body.addEventListener("click", () => {
   const music = document.getElementById("bgMusic");
-  if (music.paused) music.play();
+  if(music.paused) music.play();
 });
 </script>
 </body>
