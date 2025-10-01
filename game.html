@@ -14,7 +14,7 @@
     h1 {
       color: #00ffcc;
     }
-    .choices {
+    .choices, .vs-stage {
       margin: 20px;
     }
     .choice {
@@ -27,18 +27,9 @@
     .choice img {
       width: 100px;
       height: 100px;
-      border: 2px solid #00ffcc;
-      border-radius: 10px;
-      background: #222;
-      padding: 10px;
     }
     .choice:hover {
       transform: scale(1.2);
-    }
-    #result {
-      font-size: 1.5em;
-      margin-top: 20px;
-      min-height: 40px;
     }
     .hands {
       display: flex;
@@ -50,31 +41,54 @@
     .hands img {
       width: 120px;
       height: 120px;
+      image-rendering: pixelated;
+      transition: transform 0.2s;
+    }
+    .shake {
+      animation: shake 0.6s ease-in-out;
+    }
+    @keyframes shake {
+      0% { transform: translateY(0px); }
+      25% { transform: translateY(-20px); }
+      50% { transform: translateY(0px); }
+      75% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 20px;
+      min-height: 40px;
     }
     .score-board {
       margin-top: 20px;
       font-size: 1.2em;
     }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <h1>Rock Paper Scissors ✊📄✂️</h1>
-  
-  <div class="choices">
-    <div class="choice" onclick="play('rock')"><img src="https://i.imgur.com/TON1M7U.png" alt="Rock"></div>
-    <div class="choice" onclick="play('paper')"><img src="https://i.imgur.com/2gsdqvR.png" alt="Paper"></div>
-    <div class="choice" onclick="play('scissors')"><img src="https://i.imgur.com/pgjyhIZ.png" alt="Scissors"></div>
+
+  <!-- Stage 1: Player selects -->
+  <div class="choices" id="selectionStage">
+    <p>Select your hand to start!</p>
+    <div class="choice" onclick="startGame('rock')"><img src="https://cdn-icons-png.flaticon.com/512/1001/1001531.png" alt="Rock"></div>
+    <div class="choice" onclick="startGame('paper')"><img src="https://cdn-icons-png.flaticon.com/512/1001/1001533.png" alt="Paper"></div>
+    <div class="choice" onclick="startGame('scissors')"><img src="https://cdn-icons-png.flaticon.com/512/1001/1001535.png" alt="Scissors"></div>
   </div>
 
-  <!-- Hands display -->
-  <div class="hands">
-    <div>
-      <h3>👤 Player</h3>
-      <img id="playerHand" src="https://i.imgur.com/TON1M7U.png" alt="Player Hand">
-    </div>
-    <div>
-      <h3>🤖 Computer</h3>
-      <img id="computerHand" src="https://i.imgur.com/TON1M7U.png" alt="Computer Hand">
+  <!-- Stage 2: VS -->
+  <div class="vs-stage hidden" id="vsStage">
+    <h2>Player vs Computer</h2>
+    <div class="hands">
+      <div>
+        <h3>👤 Player</h3>
+        <img id="playerHand" src="" alt="Player Hand">
+      </div>
+      <div>
+        <h3>🤖 Computer</h3>
+        <img id="computerHand" src="" alt="Computer Hand">
+      </div>
     </div>
   </div>
 
@@ -98,49 +112,78 @@
     let computerScore = 0;
 
     const handImages = {
-      rock: "https://i.imgur.com/TON1M7U.png",
-      paper: "https://i.imgur.com/2gsdqvR.png",
-      scissors: "https://i.imgur.com/pgjyhIZ.png"
+      rock: "https://cdn-icons-png.flaticon.com/512/1001/1001531.png",
+      paper: "https://cdn-icons-png.flaticon.com/512/1001/1001533.png",
+      scissors: "https://cdn-icons-png.flaticon.com/512/1001/1001535.png"
     };
 
-    function play(playerChoice) {
-      const choices = ["rock", "paper", "scissors"];
-      const computerChoice = choices[Math.floor(Math.random() * 3)];
+    let playerChoiceGlobal = "";
 
-      // Update hands
-      document.getElementById("playerHand").src = handImages[playerChoice];
-      document.getElementById("computerHand").src = handImages[computerChoice];
+    function startGame(playerChoice) {
+      playerChoiceGlobal = playerChoice;
 
-      // Decide result
-      let result = "";
-      if (playerChoice === computerChoice) {
-        result = "🤝 It's a draw!";
-        document.getElementById("drawSound").play();
-      } else if (
-        (playerChoice === "rock" && computerChoice === "scissors") ||
-        (playerChoice === "paper" && computerChoice === "rock") ||
-        (playerChoice === "scissors" && computerChoice === "paper")
-      ) {
-        result = `🎉 You Win! ${playerChoice} beats ${computerChoice}`;
-        playerScore++;
-        document.getElementById("winSound").play();
-      } else {
-        result = `😢 You Lose! ${computerChoice} beats ${playerChoice}`;
-        computerScore++;
-        document.getElementById("loseSound").play();
-      }
+      // Hide selection, show VS stage
+      document.getElementById("selectionStage").classList.add("hidden");
+      document.getElementById("vsStage").classList.remove("hidden");
 
-      document.getElementById("result").innerText = result;
-      document.getElementById("playerScore").innerText = playerScore;
-      document.getElementById("computerScore").innerText = computerScore;
+      // Set default hands (rock) for animation
+      const playerHand = document.getElementById("playerHand");
+      const computerHand = document.getElementById("computerHand");
+      playerHand.src = handImages.rock;
+      computerHand.src = handImages.rock;
+
+      // Start shake animation
+      playerHand.classList.add("shake");
+      computerHand.classList.add("shake");
+
+      // Delay before showing final hands
+      setTimeout(() => {
+        playerHand.classList.remove("shake");
+        computerHand.classList.remove("shake");
+
+        const choices = ["rock", "paper", "scissors"];
+        const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+        playerHand.src = handImages[playerChoiceGlobal];
+        computerHand.src = handImages[computerChoice];
+
+        // Decide result
+        let result = "";
+        if (playerChoiceGlobal === computerChoice) {
+          result = "🤝 It's a draw!";
+          document.getElementById("drawSound").play();
+        } else if (
+          (playerChoiceGlobal === "rock" && computerChoice === "scissors") ||
+          (playerChoiceGlobal === "paper" && computerChoice === "rock") ||
+          (playerChoiceGlobal === "scissors" && computerChoice === "paper")
+        ) {
+          result = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
+          playerScore++;
+          document.getElementById("winSound").play();
+        } else {
+          result = `😢 You Lose! ${computerChoice} beats ${playerChoiceGlobal}`;
+          computerScore++;
+          document.getElementById("loseSound").play();
+        }
+
+        document.getElementById("result").innerText = result;
+        document.getElementById("playerScore").innerText = playerScore;
+        document.getElementById("computerScore").innerText = computerScore;
+
+        // Reset for next round
+        setTimeout(() => {
+          document.getElementById("selectionStage").classList.remove("hidden");
+          document.getElementById("vsStage").classList.add("hidden");
+          document.getElementById("result").innerText = "";
+        }, 2000);
+
+      }, 600); // shake animation duration
     }
 
-    // Start music when user clicks (to bypass autoplay restrictions)
+    // Start music when user clicks
     document.body.addEventListener("click", () => {
       const music = document.getElementById("bgMusic");
-      if (music.paused) {
-        music.play();
-      }
+      if (music.paused) music.play();
     });
   </script>
 </body>
