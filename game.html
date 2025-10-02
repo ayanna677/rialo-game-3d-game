@@ -3,273 +3,257 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini Subway Surfer — HTML/CSS/JS</title>
+  <title>Subway Surfer — Upgraded (fixed)</title>
   <style>
-    :root{
-      --width:360px; --height:640px;
-      --lane-count:3;
-      --bg:#0b6b6b;
-      --accent:#ffd700;
-    }
+    :root{--width:380px;--height:700px;--lane-count:3}
     *{box-sizing:border-box}
-    body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:linear-gradient(#056,#012);font-family:Inter,system-ui,Arial;color:#fff}
-
-    /* Game container */
-    .screen{
-      width:var(--width);height:var(--height);background:linear-gradient(#6cc, #027);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 20px 40px rgba(0,0,0,0.6);
-    }
-
-    /* Track & lanes */
-    .track{position:absolute;inset:0;display:block}
-    .ground{position:absolute;left:0;right:0;bottom:0;height:180px;background:linear-gradient(180deg,#3a3a3a 0,#222 100%);border-top-left-radius:20px;border-top-right-radius:20px;overflow:hidden}
-    .rails{position:absolute;left:0;right:0;top:20px;height:100%;pointer-events:none}
-    .lane{position:absolute;top:0;bottom:0;width:calc(100% / var(--lane-count));border-left:2px solid rgba(255,255,255,0.06);border-right:2px solid rgba(0,0,0,0.06)}
-
-    /* Player */
-    .player{position:absolute;bottom:120px;width:64px;height:64px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;pointer-events:none}
-    .player .body{width:56px;height:56px;background:linear-gradient(180deg,#ff6,#f80);border-radius:12px;box-shadow:0 8px 12px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center}
-    .player .cap{position:absolute;top:-8px;left:8px;width:40px;height:16px;background:#111;border-radius:6px}
-
-    /* Obstacles & coins */
-    .entity{position:absolute;bottom:0;width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center}
-    .obstacle{background:linear-gradient(180deg,#444,#222);box-shadow:inset 0 -6px 6px rgba(0,0,0,0.4)}
-    .coin{background:radial-gradient(circle at 30% 30%,#fff6a8,#ffd700);width:36px;height:36px;border-radius:50%;box-shadow:0 6px 10px rgba(0,0,0,0.35)}
-
-    /* UI */
-    .ui{position:absolute;left:10px;top:10px;font-weight:700;display:flex;gap:10px;align-items:center}
-    .score{background:rgba(255,255,255,0.08);padding:8px 12px;border-radius:10px}
-
-    /* Controls for mobile */
-    .controls{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:12px;pointer-events:none}
-    .btn{pointer-events:auto;background:rgba(255,255,255,0.06);padding:12px;border-radius:10px;width:76px;text-align:center;font-weight:700}
-
-    /* Start overlay */
-    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.2),rgba(0,0,0,0.5));backdrop-filter:blur(4px);flex-direction:column;gap:14px}
+    body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#081220;font-family:Inter,system-ui,Arial,color:#fff}
+    .screen{width:var(--width);height:var(--height);background:#07121a;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+    .bg-wrap{position:absolute;inset:0;overflow:hidden}
+    .bg{position:absolute;left:0;top:0;height:140%;width:200%;background-size:cover;will-change:transform}
+    .ground{position:absolute;left:0;right:0;bottom:0;height:220px;background:linear-gradient(#333,#111);border-top-left-radius:20px;border-top-right-radius:20px}
+    .rails{position:absolute;left:0;right:0;top:0;height:100%;pointer-events:none}
+    .lane{position:absolute;top:0;bottom:0;width:calc(100% / var(--lane-count));}
+    .player{position:absolute;bottom:120px;width:72px;height:96px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+    .player img{width:72px;height:96px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,0.6))}
+    .entity{position:absolute;bottom:0;will-change:transform}
+    .entity img{display:block;width:100%;height:auto}
+    .ui{position:absolute;left:12px;top:10px;display:flex;gap:8px;align-items:center}
+    .score{background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;font-weight:700}
+    .top-right{position:absolute;right:12px;top:10px;display:flex;gap:8px}
+    .btn{background:rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
+    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,10,0.3),rgba(2,6,10,0.6));backdrop-filter:blur(3px);flex-direction:column;gap:10px}
     .big{font-size:22px;font-weight:800}
-    .small{font-size:14px;opacity:0.9}
-
-    /* simple responsive */
-    @media(min-width:700px){:root{--width:420px;--height:700px}}
+    .small{font-size:13px;opacity:0.95;max-width:320px;text-align:center}
+    .controls{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:12px;pointer-events:none}
+    .control-btn{pointer-events:auto;background:rgba(255,255,255,0.06);padding:14px;border-radius:12px;width:84px;text-align:center;font-weight:800}
+    @media(min-width:900px){:root{--width:520px;--height:780px}}
   </style>
 </head>
 <body>
   <div class="screen" id="screen">
-    <div class="track" id="track">
-      <div class="rails" id="rails"></div>
-      <div class="ground"></div>
+    <div class="bg-wrap">
+      <div class="bg" id="bg"></div>
+    </div>
 
-      <div class="player" id="player">
-        <div class="cap"></div>
-        <div class="body"></div>
-      </div>
+    <div class="rails" id="rails"></div>
+    <div class="ground"></div>
+
+    <div class="player" id="player">
+      <img id="playerImg" src="https://i.postimg.cc/TLF3Qx3g/Player-sprite-running-character.jpg" alt="player">
     </div>
 
     <div class="ui">
       <div class="score">Score: <span id="score">0</span></div>
       <div class="score">Coins: <span id="coins">0</span></div>
     </div>
+    <div class="top-right">
+      <div class="btn" id="audioBtn">🔊</div>
+      <div class="btn" id="pauseBtn">⏸</div>
+    </div>
 
-    <div class="controls" id="controls" style="display:none">
-      <div class="btn" id="leftBtn">◀</div>
-      <div class="btn" id="jumpBtn">⤴</div>
-      <div class="btn" id="rightBtn">▶</div>
+    <div class="controls" id="controls">
+      <div class="control-btn" id="leftBtn">◀</div>
+      <div class="control-btn" id="jumpBtn">⤴</div>
+      <div class="control-btn" id="rightBtn">▶</div>
     </div>
 
     <div class="overlay" id="overlay">
-      <div class="big">Mini Subway Surfer</div>
-      <div class="small">Use ← → or A / D to move lanes. Space to jump. On mobile swipe left/right or use buttons.</div>
-      <button id="startBtn" class="btn" style="pointer-events:auto">Start</button>
+      <div class="big">Subway Surfer — Upgraded</div>
+      <div class="small">Use ← / → or A / D to switch lanes, Space to jump. On mobile: swipe or use buttons.</div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="howBtn" class="btn">How to</button>
+      </div>
     </div>
   </div>
 
   <script>
-    // Simple endless runner with 3 lanes
+    try {
+    const ASSETS = {
+      player: 'https://i.postimg.cc/TLF3Qx3g/Player-sprite-running-character.jpg',
+      coin: 'https://i.postimg.cc/njCLvrph/Coins-gold-coin-PNG.png',
+      obstacle: 'https://i.postimg.cc/bDsvQrpn/Obstacles-trains-barriers-with-images.avif',
+      power: 'https://i.postimg.cc/XGmYxWYm/Power-ups-hoverboard-magnet-jetpack.jpg',
+      bg: 'https://i.postimg.cc/MMNptwpX/Scrolling-background-tracks-city-scenery.avif'
+    };
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null; let audioEnabled = true;
+    function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx(); }
+    function playJump(){ if(!audioEnabled) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=520; g.gain.value=0.08; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.12); }
+    function playCoin(){ if(!audioEnabled) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='triangle'; o.frequency.value=880; g.gain.value=0.06; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.12); }
+    function playCrash(){ if(!audioEnabled) return; ensureAudio(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=140; g.gain.value=0.18; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.3); }
+    let bgInterval=null; function startBgm(){ if(!audioEnabled) return; ensureAudio(); if(bgInterval) return; const ctx=audioCtx; const o1=ctx.createOscillator(); const g1=ctx.createGain(); o1.type='sine'; o1.frequency.value=120; g1.gain.value=0.02; o1.connect(g1); g1.connect(ctx.destination); o1.start(); bgInterval={osc:o1,gain:g1}; }
+    function stopBgm(){ if(!bgInterval) return; try{ bgInterval.osc.stop(); }catch(e){} bgInterval=null; }
+
     const screen = document.getElementById('screen');
+    const bgEl = document.getElementById('bg');
     const rails = document.getElementById('rails');
     const playerEl = document.getElementById('player');
+    const playerImg = document.getElementById('playerImg');
     const overlay = document.getElementById('overlay');
     const startBtn = document.getElementById('startBtn');
+    const howBtn = document.getElementById('howBtn');
     const scoreEl = document.getElementById('score');
     const coinsEl = document.getElementById('coins');
-    const controls = document.getElementById('controls');
     const leftBtn = document.getElementById('leftBtn');
     const rightBtn = document.getElementById('rightBtn');
     const jumpBtn = document.getElementById('jumpBtn');
+    const audioBtn = document.getElementById('audioBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
 
     const LANE_COUNT = 3;
-    const WIDTH = screen.clientWidth;
-    const laneWidth = WIDTH / LANE_COUNT;
+    let laneWidth = 0;
+    function drawLanes(){ rails.innerHTML=''; for(let i=0;i<LANE_COUNT;i++){ const d=document.createElement('div'); d.className='lane'; d.style.left=(i*(100/LANE_COUNT))+'%'; d.style.width=(100/LANE_COUNT)+'%'; rails.appendChild(d);} }
 
-    // draw lane divs
-    for(let i=0;i<LANE_COUNT;i++){
-      const d = document.createElement('div');
-      d.className='lane';
-      d.style.left = (i*(100/LANE_COUNT))+'%';
-      d.style.width = (100/LANE_COUNT)+'%';
-      rails.appendChild(d);
+    let lane = 1, targetLane = 1;
+    let x = 0; let vy = 0, y = 0; let gravity = 0.0026, jumpVel = 0.78;
+    let entities = [], speed = 0.22, score = 0, coins = 0, running = false, lastTime = null, spawnTimer = 0, spawnInterval = 700;
+
+    let magnetActive = false, hoverActive = false, jetpackActive = false;
+    let hoverTimer = 0, jetpackTimer = 0, magnetTimer = 0;
+
+    const HS_KEY = 'subway_hs_v1';
+    function getHigh(){return parseInt(localStorage.getItem(HS_KEY)||'0',10)}
+    function setHigh(v){localStorage.setItem(HS_KEY,String(v))}
+
+    const imgs = {};
+    function preload(){ for(const k in ASSETS){ const i=new Image(); i.src=ASSETS[k]; imgs[k]=i; } }
+    preload();
+
+    let bgPos = 0;
+
+    function resize(){ laneWidth = screen.clientWidth / LANE_COUNT; drawLanes(); // ensure player centered using its actual width
+      const pW = playerEl.offsetWidth || 72; x = laneToX(lane); playerEl.style.left = x + 'px'; // reposition existing entities horizontally
+      entities.forEach(en=>{ const w = en.width || 80; en.el.style.left = (en.lane*laneWidth + (laneWidth - w)/2) + 'px'; });
     }
+    window.addEventListener('resize', resize);
 
-    // Game state
-    let lane = 1; // 0..2
-    let targetLane = 1;
-    let x = laneToX(lane);
-    let vy = 0;
-    let y = 0; // jump offset
-    let gravity = 0.0018; // px per ms^2
-    let jumpVel = 0.6; // initial vy
+    function laneToX(l){ const pW = playerEl.offsetWidth || 72; return l*laneWidth + laneWidth/2 - pW/2; }
 
-    let entities = []; // obstacles and coins
-    let speed = 0.18; // px per ms (vertical movement)
-    let score = 0;
-    let coins = 0;
-    let running = false;
-    let lastTime = null;
-    let spawnTimer = 0;
-    let spawnInterval = 900; // ms
+    x = 0; // will be set on resize
+    drawLanes(); resize();
 
-    // responsive show controls on small screens
-    function checkMobile(){
-      if(window.innerWidth <= 700){controls.style.display='flex'} else controls.style.display='none';
-    }
-    checkMobile(); window.addEventListener('resize', checkMobile);
+    function createEntity(type, laneIdx){ const el = document.createElement('div'); el.className='entity'; let w=64, h=64;
+      if(type==='coin'){ w=48; h=48; const img = document.createElement('img'); img.src=ASSETS.coin; img.alt='coin'; el.appendChild(img); el.dataset.type='coin'; }
+      else if(type==='obstacle'){ w=120; h=84; const img=document.createElement('img'); img.src=ASSETS.obstacle; img.alt='obstacle'; el.appendChild(img); el.dataset.type='obstacle'; }
+      else { w=58; h=58; const img=document.createElement('img'); img.src=ASSETS.power; img.alt='power'; el.appendChild(img); el.dataset.type='power'; }
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.left = (laneIdx*laneWidth + (laneWidth - w)/2) + 'px';
+      el.style.bottom = '-180px'; screen.appendChild(el);
+      return {el, lane: laneIdx, y: -180, type: el.dataset.type, width: w, height: h}; }
 
-    // helpers
-    function laneToX(l){
-      // center of lane in px relative to track left
-      return l*laneWidth + laneWidth/2 - 32; // player width/2
-    }
+    function spawnRandom(){ const r = Math.random(); const laneIdx = Math.floor(Math.random()*LANE_COUNT); if(r<0.55) entities.push(createEntity('obstacle', laneIdx)); else if(r<0.9) entities.push(createEntity('coin', laneIdx)); else entities.push(createEntity('power', laneIdx)); }
 
-    function createEntity(type, laneIdx){
-      const el = document.createElement('div');
-      el.className='entity '+type;
-      el.style.left = (laneIdx*laneWidth + (laneWidth-56)/2) + 'px';
-      el.style.bottom = '-80px';
-      if(type==='coin'){
-        el.innerHTML = '<div class="coin"></div>';
-        el.dataset.type='coin';
-      } else {
-        el.classList.add('obstacle');
-        el.dataset.type='obstacle';
-      }
-      screen.appendChild(el);
-      return {el, lane:laneIdx, y:-80, type:el.dataset.type};
-    }
+    document.addEventListener('keydown', e=>{ if(!running) return; if(e.key==='ArrowLeft'||e.key==='a') moveLeft(); if(e.key==='ArrowRight'||e.key==='d') moveRight(); if(e.code==='Space') jump(); });
+    leftBtn.addEventListener('click', ()=>{ if(running) moveLeft(); }); rightBtn.addEventListener('click', ()=>{ if(running) moveRight(); }); jumpBtn.addEventListener('click', ()=>{ if(running) jump(); });
 
-    function spawnRandom(){
-      const r = Math.random();
-      if(r<0.6){ // obstacle
-        const lane = Math.floor(Math.random()*LANE_COUNT);
-        entities.push(createEntity('box', lane));
-      } else { // coin
-        const lane = Math.floor(Math.random()*LANE_COUNT);
-        entities.push(createEntity('coinWrap', lane));
-      }
-    }
+    let touchStartX = null; screen.addEventListener('touchstart', e=>{ touchStartX = e.changedTouches[0].clientX; });
+    screen.addEventListener('touchend', e=>{ if(!running) return; const dx = e.changedTouches[0].clientX - touchStartX; if(Math.abs(dx)>40){ if(dx>0) moveRight(); else moveLeft(); } else jump(); });
 
-    // Input
-    document.addEventListener('keydown', e=>{
-      if(!running) return;
-      if(e.key==='ArrowLeft' || e.key==='a' || e.key==='A'){moveLeft()}
-      if(e.key==='ArrowRight' || e.key==='d' || e.key==='D'){moveRight()}
-      if(e.code==='Space'){jump()}
-    });
-    leftBtn.addEventListener('click', ()=>{moveLeft()});
-    rightBtn.addEventListener('click', ()=>{moveRight()});
-    jumpBtn.addEventListener('click', ()=>{jump()});
+    function moveLeft(){ targetLane = Math.max(0, targetLane-1); }
+    function moveRight(){ targetLane = Math.min(LANE_COUNT-1, targetLane+1); }
+    function jump(){ if(jetpackActive) return; if(y===0){ vy = -jumpVel; y = 0.1; playJump(); } }
 
-    // Touch swipe
-    let touchStartX = null;
-    screen.addEventListener('touchstart', e=>{touchStartX = e.changedTouches[0].clientX});
-    screen.addEventListener('touchend', e=>{
-      if(!running) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if(Math.abs(dx) > 30){ if(dx>0) moveRight(); else moveLeft(); }
-      else jump();
-    });
-
-    function moveLeft(){ targetLane = Math.max(0, targetLane-1) }
-    function moveRight(){ targetLane = Math.min(LANE_COUNT-1, targetLane+1) }
-    function jump(){ if(y===0){ vy = -jumpVel; y = 0.1 } }
-
-    // Game loop
-    function gameLoop(ts){
-      if(!lastTime) lastTime = ts;
-      const dt = ts - lastTime; lastTime = ts;
+    function gameLoop(ts){ try{
+      if(!lastTime) lastTime = ts; const dt = ts - lastTime; lastTime = ts;
       if(running){
-        // move player toward target lane smoothly
+        // background
+        const bgSpeed = 0.04 + Math.min(0.12, speed*0.3);
+        bgPos -= bgSpeed * dt; // pixels per ms-ish
+        // wrap to avoid huge numbers
+        const wrapAt = screen.clientWidth || 380;
+        if(bgPos <= -wrapAt) bgPos += wrapAt;
+        bgEl.style.transform = `translateX(${bgPos}px)`;
+
+        // smooth lane movement
         const tx = laneToX(targetLane);
-        x += (tx - x) * Math.min(1, 0.02*dt);
+        x += (tx - x) * Math.min(1, 0.02 * dt);
         playerEl.style.left = x + 'px';
 
-        // jump physics
-        if(y> -999){
-          vy += gravity * dt;
-          y += vy * dt;
-          if(y>0){ y=0; vy=0; }
-          playerEl.style.transform = `translateX(-50%) translateY(${ -y }px)`;
-        }
+        // jump physics (unless jetpack)
+        if(!jetpackActive){ vy += gravity * dt; y += vy * dt; if(y>0){ y = 0; vy = 0; } playerEl.style.transform = `translateX(-50%) translateY(${-y}px)`; }
+        else { playerEl.style.transform = `translateX(-50%) translateY(-120px)`; }
 
         // spawn
-        spawnTimer += dt;
-        if(spawnTimer > spawnInterval){ spawnTimer = 0; spawnInterval = 600 + Math.random()*800; spawnRandom(); }
+        spawnTimer += dt; if(spawnTimer > spawnInterval){ spawnTimer = 0; spawnInterval = 450 + Math.random()*700; spawnRandom(); }
 
-        // move entities
-        for(let i=entities.length-1;i>=0;i--){
-          let en = entities[i];
-          en.y += speed * dt * 100; // scale so feel okay
-          en.el.style.bottom = en.y + 'px';
+        // entities
+        for(let i = entities.length-1; i >= 0; i--){ const en = entities[i]; en.y += speed * dt * 100; en.el.style.bottom = en.y + 'px';
+          const playerBottom = 120 + y; const enBottom = en.y; const enTop = en.y + (en.height || 64);
+          const playerCenterX = x + (playerEl.offsetWidth || 72)/2; const enCenterX = en.lane * laneWidth + laneWidth/2; const dx = Math.abs(enCenterX - playerCenterX);
 
-          // collision? entity approx center with player
-          // player's vertical pos approx 120 + y
-          const playerBottom = 120 + y;
-          if(en.y + 30 > playerBottom - 30 && en.y < playerBottom + 60 && en.lane === targetLane){
-            if(en.type==='obstacle'){
-              endGame(); return; }
-            if(en.type==='coin'){
-              // coin collected
-              coins += 1; coinsEl.textContent = coins; score += 20; scoreEl.textContent = score;
-              en.el.remove(); entities.splice(i,1); continue;
+          // horizontal proximity check + vertical overlap
+          if(dx < laneWidth * 0.38 && enTop > playerBottom - 40 && enBottom < playerBottom + 80){
+            if(en.type === 'obstacle'){
+              if(hoverActive){ hoverActive = false; hoverTimer = 0; en.el.remove(); entities.splice(i,1); score += 50; scoreEl.textContent = score; continue; }
+              if(jetpackActive){ en.el.remove(); entities.splice(i,1); score += 50; scoreEl.textContent = score; continue; }
+              playCrash(); endGame(); return;
+            }
+            if(en.type === 'coin'){
+              coins += 1; score += 10; coinsEl.textContent = coins; scoreEl.textContent = score; playCoin(); en.el.remove(); entities.splice(i,1); continue;
+            }
+            if(en.type === 'power'){
+              const p = Math.random(); if(p < 0.33){ magnetActive = true; magnetTimer = 7000; } else if(p < 0.66){ hoverActive = true; hoverTimer = 8000; } else { jetpackActive = true; jetpackTimer = 5000; }
+              score += 30; scoreEl.textContent = score; en.el.remove(); entities.splice(i,1); continue;
             }
           }
 
-          // passed the player -> award score and remove
-          if(en.y > screen.clientHeight + 100){
-            score += (en.type==='coin')?10:30;
-            scoreEl.textContent = score;
-            en.el.remove(); entities.splice(i,1);
+          // magnet auto-collect
+          if(magnetActive && en.type === 'coin'){
+            if(dx < laneWidth * 0.9 && Math.abs(en.y - (playerBottom)) < 300){ coins += 1; score += 10; coinsEl.textContent = coins; scoreEl.textContent = score; playCoin(); en.el.remove(); entities.splice(i,1); continue; }
           }
+
+          // remove passed
+          if(en.y > screen.clientHeight + 200){ en.el.remove(); entities.splice(i,1); score += (en.type==='coin')?5:15; scoreEl.textContent = score; }
         }
 
-        // gradually increase speed
-        speed += 0.000005 * dt; // very small
-        // increase score over time
+        // update timers
+        if(magnetActive){ magnetTimer -= dt; if(magnetTimer <= 0) magnetActive = false; }
+        if(hoverActive){ hoverTimer -= dt; if(hoverTimer <= 0) hoverActive = false; }
+        if(jetpackActive){ jetpackTimer -= dt; if(jetpackTimer <= 0) jetpackActive = false; }
+
+        // speed & score increase
+        speed += 0.00001 * dt;
         score += Math.floor(0.01 * dt);
         scoreEl.textContent = score;
       }
       requestAnimationFrame(gameLoop);
-    }
+    } catch(err){ console.error('Game loop error', err); showFatalError(err); } }
 
-    function startGame(){
-      // reset
-      entities.forEach(e=>e.el.remove()); entities = [];
-      lane = 1; targetLane = 1; x = laneToX(lane);
-      playerEl.style.left = x + 'px'; playerEl.style.transform='translateX(-50%)';
-      vy=0; y=0; speed=0.18; score=0; coins=0; scoreEl.textContent='0'; coinsEl.textContent='0'; spawnTimer=0; spawnInterval=900;
-      running = true; overlay.style.display='none'; lastTime = null;
-    }
+    function showFatalError(err){ overlay.style.display = 'flex'; overlay.innerHTML = `<div class="big">Error</div><div class="small">${String(err).slice(0,200)}</div>`; running = false; }
 
-    function endGame(){ running = false; overlay.style.display='flex'; overlay.innerHTML = `<div class="big">Game Over</div><div class="small">Score: ${score} • Coins: ${coins}</div><button id="startBtn2" class="btn" style="pointer-events:auto">Restart</button>`;
-      document.getElementById('startBtn2').addEventListener('click', ()=>{ overlay.innerHTML = ''; overlay.appendChild(startBtn); overlay.appendChild(document.createElement('div')); location.reload(); });
-    }
+    function startGame(){ entities.forEach(e=>e.el.remove()); entities = []; lane = 1; targetLane = 1; x = laneToX(lane); playerEl.style.left = x + 'px'; vy = 0; y = 0; speed = 0.22; score = 0; coins = 0; scoreEl.textContent = '0'; coinsEl.textContent = '0'; spawnTimer = 0; spawnInterval = 700; running = true; overlay.style.display = 'none'; lastTime = null; startBgm(); }
 
-    // wire start
+    function endGame(){ running = false; stopBgm(); const hs = getHigh(); if(score > hs) setHigh(score); overlay.style.display = 'flex'; overlay.innerHTML = `<div class="big">Game Over</div><div class="small">Score: ${score} • Coins: ${coins} • High: ${getHigh()}</div><div style='display:flex;gap:8px;margin-top:8px'><button id="restart" class="btn">Restart</button><button id="share" class="btn">Share</button></div>`;
+      document.getElementById('restart').addEventListener('click', ()=>{ overlay.innerHTML=''; overlay.appendChild(startBtn); overlay.appendChild(howBtn); startGame(); });
+      document.getElementById('share').addEventListener('click', ()=>{ navigator.clipboard?.writeText(`I scored ${score} in Subway Surfer — Upgraded!`); alert('Score copied to clipboard'); }); }
+
     startBtn.addEventListener('click', ()=>{ overlay.style.display='none'; startGame(); });
+    howBtn.addEventListener('click', ()=>{ alert('Controls:
+- Left/Right arrows or A/D to switch lanes.
+- Space to jump.
+- On mobile: swipe left/right or tap buttons.
+Power-ups: magnet (auto-collect), hoverboard (protects once), jetpack (fly).'); });
 
-    // init player pos
-    x = laneToX(lane);
-    playerEl.style.left = x + 'px';
+    audioBtn.addEventListener('click', ()=>{ audioEnabled = !audioEnabled; audioBtn.textContent = audioEnabled? '🔊' : '🔈'; if(audioEnabled) startBgm(); else stopBgm(); });
+    pauseBtn.addEventListener('click', ()=>{ running = !running; pauseBtn.textContent = running? '⏸':'▶'; if(running){ lastTime = null; requestAnimationFrame(gameLoop); startBgm(); } else { stopBgm(); } });
 
+    function checkMobile(){ if(window.innerWidth <= 700) document.getElementById('controls').style.display='flex'; else document.getElementById('controls').style.display='none'; }
+    checkMobile(); window.addEventListener('resize', ()=>{ checkMobile(); resize(); });
+
+    playerImg.src = ASSETS.player; bgEl.style.backgroundImage = `url('${ASSETS.bg}')`;
+    // start loop
     requestAnimationFrame(gameLoop);
+
+    // resume audio on first gesture
+    window.addEventListener('pointerdown', ()=>{ if(audioEnabled) ensureAudio(); }, {once:true});
+
+    // global error catch
+    window.addEventListener('error', e=>{ console.error('Global error', e.error || e.message); showFatalError(e.error || e.message); });
+
+    } catch(e){ console.error('Init error', e); document.getElementById('overlay').style.display='flex'; document.getElementById('overlay').innerHTML = `<div class="big">Init error</div><div class="small">${String(e).slice(0,200)}</div>`; }
   </script>
 </body>
 </html>
