@@ -1,292 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rock Paper Scissors Game</title>
-
-  <!-- ========================
-       CSS Section
-       ======================== -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Subway Surfer — HTML/CSS/JS</title>
   <style>
-    /* ===== Body Styling ===== */
-    body {
-      background-color: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
+    :root{
+      --width:360px; --height:640px;
+      --lane-count:3;
+      --bg:#0b6b6b;
+      --accent:#ffd700;
+    }
+    *{box-sizing:border-box}
+    body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:linear-gradient(#056,#012);font-family:Inter,system-ui,Arial;color:#fff}
+
+    /* Game container */
+    .screen{
+      width:var(--width);height:var(--height);background:linear-gradient(#6cc, #027);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 20px 40px rgba(0,0,0,0.6);
     }
 
-    /* ===== Main Heading ===== */
-    h1 {
-      color: #00ffcc;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
+    /* Track & lanes */
+    .track{position:absolute;inset:0;display:block}
+    .ground{position:absolute;left:0;right:0;bottom:0;height:180px;background:linear-gradient(180deg,#3a3a3a 0,#222 100%);border-top-left-radius:20px;border-top-right-radius:20px;overflow:hidden}
+    .rails{position:absolute;left:0;right:0;top:20px;height:100%;pointer-events:none}
+    .lane{position:absolute;top:0;bottom:0;width:calc(100% / var(--lane-count));border-left:2px solid rgba(255,255,255,0.06);border-right:2px solid rgba(0,0,0,0.06)}
 
-    /* ===== Choices Section ===== */
-    .choices {
-      margin: 20px 0;
-    }
+    /* Player */
+    .player{position:absolute;bottom:120px;width:64px;height:64px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .player .body{width:56px;height:56px;background:linear-gradient(180deg,#ff6,#f80);border-radius:12px;box-shadow:0 8px 12px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center}
+    .player .cap{position:absolute;top:-8px;left:8px;width:40px;height:16px;background:#111;border-radius:6px}
 
-    .choice {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      border: 2px solid #00ffcc;
-      border-radius: 12px;
-      background-color: #222;
-      box-shadow: 0 0 10px #00ffcc50;
-    }
+    /* Obstacles & coins */
+    .entity{position:absolute;bottom:0;width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .obstacle{background:linear-gradient(180deg,#444,#222);box-shadow:inset 0 -6px 6px rgba(0,0,0,0.4)}
+    .coin{background:radial-gradient(circle at 30% 30%,#fff6a8,#ffd700);width:36px;height:36px;border-radius:50%;box-shadow:0 6px 10px rgba(0,0,0,0.35)}
 
-    .choice img {
-      width: 100px;
-      height: 100px;
-    }
+    /* UI */
+    .ui{position:absolute;left:10px;top:10px;font-weight:700;display:flex;gap:10px;align-items:center}
+    .score{background:rgba(255,255,255,0.08);padding:8px 12px;border-radius:10px}
 
-    .choice:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 20px #00ffcc;
-    }
+    /* Controls for mobile */
+    .controls{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:12px;pointer-events:none}
+    .btn{pointer-events:auto;background:rgba(255,255,255,0.06);padding:12px;border-radius:10px;width:76px;text-align:center;font-weight:700}
 
-    /* ===== VS Stage ===== */
-    .vs-stage {
-      margin: 20px 0;
-    }
+    /* Start overlay */
+    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.2),rgba(0,0,0,0.5));backdrop-filter:blur(4px);flex-direction:column;gap:14px}
+    .big{font-size:22px;font-weight:800}
+    .small{font-size:14px;opacity:0.9}
 
-    .hidden {
-      display: none;
-    }
-
-    /* ===== Hands Styling ===== */
-    .hands {
-      display: flex;
-      justify-content: center;
-      gap: 50px;
-      margin-top: 20px;
-      align-items: center;
-    }
-
-    .hand-container {
-      text-align: center;
-      width: 140px;
-    }
-
-    .hand-container h3 {
-      margin-bottom: 10px;
-      font-size: 1.2em;
-    }
-
-    .hands img {
-      width: 120px;
-      height: 120px;
-      transition: transform 0.2s;
-      border-radius: 12px;
-      border: 2px solid #00ffcc50;
-      background-color: #222;
-    }
-
-    /* ===== Shake Animation ===== */
-    .shake {
-      animation: shake 0.6s ease-in-out;
-    }
-
-    @keyframes shake {
-      0% { transform: translateY(0px); }
-      25% { transform: translateY(-20px); }
-      50% { transform: translateY(0px); }
-      75% { transform: translateY(-20px); }
-      100% { transform: translateY(0px); }
-    }
-
-    /* ===== Color Filter for Logo Effect ===== */
-    .rock { filter: hue-rotate(200deg) saturate(150%) brightness(1.1); }
-    .paper { filter: hue-rotate(50deg) saturate(200%) brightness(1.2); }
-    .scissors { filter: hue-rotate(100deg) saturate(180%) brightness(1.1); }
-
-    /* ===== Result Text ===== */
-    #result {
-      font-size: 1.5em;
-      margin-top: 20px;
-      min-height: 40px;
-      color: #ffdd00;
-    }
-
-    /* ===== Scoreboard ===== */
-    .score-board {
-      margin-top: 20px;
-      font-size: 1.2em;
-    }
-
-    .score-board p {
-      margin: 5px 0;
-    }
-
-    /* ===== Responsive ===== */
-    @media (max-width: 500px) {
-      .hands {
-        flex-direction: column;
-        gap: 30px;
-      }
-    }
+    /* simple responsive */
+    @media(min-width:700px){:root{--width:420px;--height:700px}}
   </style>
 </head>
-
 <body>
-  <!-- ========================
-       HTML Section
-       ======================== -->
+  <div class="screen" id="screen">
+    <div class="track" id="track">
+      <div class="rails" id="rails"></div>
+      <div class="ground"></div>
 
-  <!-- Main Heading -->
-  <h1>Rock Paper Scissors ✊📄✂️</h1>
-
-  <!-- ===== Stage 1: Player Selection ===== -->
-  <div class="choices" id="selectionStage">
-    <p>Select your hand to start!</p>
-
-    <div class="choice" onclick="startGame('rock')">
-      <img src="https://i.ibb.co/KV5f0bM/hand-rock.png" alt="Rock">
-    </div>
-
-    <div class="choice" onclick="startGame('paper')">
-      <img src="https://i.ibb.co/YQhQ7xR/hand-paper.png" alt="Paper">
-    </div>
-
-    <div class="choice" onclick="startGame('scissors')">
-      <img src="https://i.ibb.co/7k6nY1D/hand-scissors.png" alt="Scissors">
-    </div>
-  </div>
-
-  <!-- ===== Stage 2: VS ===== -->
-  <div class="vs-stage hidden" id="vsStage">
-    <h2>Player vs Computer</h2>
-    <div class="hands">
-      <div class="hand-container">
-        <h3>👤 Player</h3>
-        <img id="playerHand" src="" alt="Player Hand">
-      </div>
-      <div class="hand-container">
-        <h3>🤖 Computer</h3>
-        <img id="computerHand" src="" alt="Computer Hand">
+      <div class="player" id="player">
+        <div class="cap"></div>
+        <div class="body"></div>
       </div>
     </div>
+
+    <div class="ui">
+      <div class="score">Score: <span id="score">0</span></div>
+      <div class="score">Coins: <span id="coins">0</span></div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none">
+      <div class="btn" id="leftBtn">◀</div>
+      <div class="btn" id="jumpBtn">⤴</div>
+      <div class="btn" id="rightBtn">▶</div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="big">Mini Subway Surfer</div>
+      <div class="small">Use ← → or A / D to move lanes. Space to jump. On mobile swipe left/right or use buttons.</div>
+      <button id="startBtn" class="btn" style="pointer-events:auto">Start</button>
+    </div>
   </div>
 
-  <!-- ===== Result Section ===== -->
-  <div id="result"></div>
-
-  <!-- ===== Scoreboard ===== -->
-  <div class="score-board">
-    <p>Player Score: <span id="playerScore">0</span></p>
-    <p>Computer Score: <span id="computerScore">0</span></p>
-  </div>
-
-  <!-- ========================
-       Audio Section
-       ======================== -->
-  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop></audio>
-  <audio id="winSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-  <audio id="loseSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
-  <audio id="drawSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
-
-  <!-- ========================
-       JavaScript Section
-       ======================== -->
   <script>
-    // ========================
-    // Game Variables
-    // ========================
-    let playerScore = 0;
-    let computerScore = 0;
+    // Simple endless runner with 3 lanes
+    const screen = document.getElementById('screen');
+    const rails = document.getElementById('rails');
+    const playerEl = document.getElementById('player');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+    const scoreEl = document.getElementById('score');
+    const coinsEl = document.getElementById('coins');
+    const controls = document.getElementById('controls');
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
+    const jumpBtn = document.getElementById('jumpBtn');
 
-    // Direct hand image URLs
-    const handImages = {
-      rock: "https://i.ibb.co/KV5f0bM/hand-rock.png",
-      paper: "https://i.ibb.co/YQhQ7xR/hand-paper.png",
-      scissors: "https://i.ibb.co/7k6nY1D/hand-scissors.png"
-    };
+    const LANE_COUNT = 3;
+    const WIDTH = screen.clientWidth;
+    const laneWidth = WIDTH / LANE_COUNT;
 
-    let playerChoiceGlobal = "";
-
-    // ========================
-    // Start Game Function
-    // ========================
-    function startGame(playerChoice) {
-      // Store player's choice
-      playerChoiceGlobal = playerChoice;
-
-      // Hide selection stage and show VS stage
-      document.getElementById("selectionStage").classList.add("hidden");
-      document.getElementById("vsStage").classList.remove("hidden");
-
-      // Get hand elements
-      const playerHand = document.getElementById("playerHand");
-      const computerHand = document.getElementById("computerHand");
-
-      // Initial hand (rock) for animation
-      playerHand.src = handImages.rock;
-      computerHand.src = handImages.rock;
-      playerHand.className = "shake";
-      computerHand.className = "shake";
-
-      // Wait for shake animation
-      setTimeout(() => {
-        // Generate random computer choice
-        const choices = ["rock", "paper", "scissors"];
-        const computerChoice = choices[Math.floor(Math.random() * 3)];
-
-        // Update hand images to actual choice
-        playerHand.src = handImages[playerChoiceGlobal];
-        computerHand.src = handImages[computerChoice];
-
-        // Apply color filters based on choice
-        playerHand.className = playerChoiceGlobal;
-        computerHand.className = computerChoice;
-
-        // Determine result
-        let result = "";
-        if (playerChoiceGlobal === computerChoice) {
-          result = "🤝 It's a draw!";
-          document.getElementById("drawSound").play();
-        } else if (
-          (playerChoiceGlobal === "rock" && computerChoice === "scissors") ||
-          (playerChoiceGlobal === "paper" && computerChoice === "rock") ||
-          (playerChoiceGlobal === "scissors" && computerChoice === "paper")
-        ) {
-          result = `🎉 You Win! ${playerChoiceGlobal} beats ${computerChoice}`;
-          playerScore++;
-          document.getElementById("winSound").play();
-        } else {
-          result = `😢 You Lose! ${computerChoice} beats ${playerChoiceGlobal}`;
-          computerScore++;
-          document.getElementById("loseSound").play();
-        }
-
-        // Display result
-        document.getElementById("result").innerText = result;
-        document.getElementById("playerScore").innerText = playerScore;
-        document.getElementById("computerScore").innerText = computerScore;
-
-        // Reset back to selection stage after 2 seconds
-        setTimeout(() => {
-          document.getElementById("selectionStage").classList.remove("hidden");
-          document.getElementById("vsStage").classList.add("hidden");
-          document.getElementById("result").innerText = "";
-        }, 2000);
-
-      }, 600); // End shake timeout
+    // draw lane divs
+    for(let i=0;i<LANE_COUNT;i++){
+      const d = document.createElement('div');
+      d.className='lane';
+      d.style.left = (i*(100/LANE_COUNT))+'%';
+      d.style.width = (100/LANE_COUNT)+'%';
+      rails.appendChild(d);
     }
 
-    // ========================
-    // Play background music on first click
-    // ========================
-    document.body.addEventListener("click", () => {
-      const music = document.getElementById("bgMusic");
-      if (music.paused) music.play();
+    // Game state
+    let lane = 1; // 0..2
+    let targetLane = 1;
+    let x = laneToX(lane);
+    let vy = 0;
+    let y = 0; // jump offset
+    let gravity = 0.0018; // px per ms^2
+    let jumpVel = 0.6; // initial vy
+
+    let entities = []; // obstacles and coins
+    let speed = 0.18; // px per ms (vertical movement)
+    let score = 0;
+    let coins = 0;
+    let running = false;
+    let lastTime = null;
+    let spawnTimer = 0;
+    let spawnInterval = 900; // ms
+
+    // responsive show controls on small screens
+    function checkMobile(){
+      if(window.innerWidth <= 700){controls.style.display='flex'} else controls.style.display='none';
+    }
+    checkMobile(); window.addEventListener('resize', checkMobile);
+
+    // helpers
+    function laneToX(l){
+      // center of lane in px relative to track left
+      return l*laneWidth + laneWidth/2 - 32; // player width/2
+    }
+
+    function createEntity(type, laneIdx){
+      const el = document.createElement('div');
+      el.className='entity '+type;
+      el.style.left = (laneIdx*laneWidth + (laneWidth-56)/2) + 'px';
+      el.style.bottom = '-80px';
+      if(type==='coin'){
+        el.innerHTML = '<div class="coin"></div>';
+        el.dataset.type='coin';
+      } else {
+        el.classList.add('obstacle');
+        el.dataset.type='obstacle';
+      }
+      screen.appendChild(el);
+      return {el, lane:laneIdx, y:-80, type:el.dataset.type};
+    }
+
+    function spawnRandom(){
+      const r = Math.random();
+      if(r<0.6){ // obstacle
+        const lane = Math.floor(Math.random()*LANE_COUNT);
+        entities.push(createEntity('box', lane));
+      } else { // coin
+        const lane = Math.floor(Math.random()*LANE_COUNT);
+        entities.push(createEntity('coinWrap', lane));
+      }
+    }
+
+    // Input
+    document.addEventListener('keydown', e=>{
+      if(!running) return;
+      if(e.key==='ArrowLeft' || e.key==='a' || e.key==='A'){moveLeft()}
+      if(e.key==='ArrowRight' || e.key==='d' || e.key==='D'){moveRight()}
+      if(e.code==='Space'){jump()}
     });
+    leftBtn.addEventListener('click', ()=>{moveLeft()});
+    rightBtn.addEventListener('click', ()=>{moveRight()});
+    jumpBtn.addEventListener('click', ()=>{jump()});
+
+    // Touch swipe
+    let touchStartX = null;
+    screen.addEventListener('touchstart', e=>{touchStartX = e.changedTouches[0].clientX});
+    screen.addEventListener('touchend', e=>{
+      if(!running) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if(Math.abs(dx) > 30){ if(dx>0) moveRight(); else moveLeft(); }
+      else jump();
+    });
+
+    function moveLeft(){ targetLane = Math.max(0, targetLane-1) }
+    function moveRight(){ targetLane = Math.min(LANE_COUNT-1, targetLane+1) }
+    function jump(){ if(y===0){ vy = -jumpVel; y = 0.1 } }
+
+    // Game loop
+    function gameLoop(ts){
+      if(!lastTime) lastTime = ts;
+      const dt = ts - lastTime; lastTime = ts;
+      if(running){
+        // move player toward target lane smoothly
+        const tx = laneToX(targetLane);
+        x += (tx - x) * Math.min(1, 0.02*dt);
+        playerEl.style.left = x + 'px';
+
+        // jump physics
+        if(y> -999){
+          vy += gravity * dt;
+          y += vy * dt;
+          if(y>0){ y=0; vy=0; }
+          playerEl.style.transform = `translateX(-50%) translateY(${ -y }px)`;
+        }
+
+        // spawn
+        spawnTimer += dt;
+        if(spawnTimer > spawnInterval){ spawnTimer = 0; spawnInterval = 600 + Math.random()*800; spawnRandom(); }
+
+        // move entities
+        for(let i=entities.length-1;i>=0;i--){
+          let en = entities[i];
+          en.y += speed * dt * 100; // scale so feel okay
+          en.el.style.bottom = en.y + 'px';
+
+          // collision? entity approx center with player
+          // player's vertical pos approx 120 + y
+          const playerBottom = 120 + y;
+          if(en.y + 30 > playerBottom - 30 && en.y < playerBottom + 60 && en.lane === targetLane){
+            if(en.type==='obstacle'){
+              endGame(); return; }
+            if(en.type==='coin'){
+              // coin collected
+              coins += 1; coinsEl.textContent = coins; score += 20; scoreEl.textContent = score;
+              en.el.remove(); entities.splice(i,1); continue;
+            }
+          }
+
+          // passed the player -> award score and remove
+          if(en.y > screen.clientHeight + 100){
+            score += (en.type==='coin')?10:30;
+            scoreEl.textContent = score;
+            en.el.remove(); entities.splice(i,1);
+          }
+        }
+
+        // gradually increase speed
+        speed += 0.000005 * dt; // very small
+        // increase score over time
+        score += Math.floor(0.01 * dt);
+        scoreEl.textContent = score;
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startGame(){
+      // reset
+      entities.forEach(e=>e.el.remove()); entities = [];
+      lane = 1; targetLane = 1; x = laneToX(lane);
+      playerEl.style.left = x + 'px'; playerEl.style.transform='translateX(-50%)';
+      vy=0; y=0; speed=0.18; score=0; coins=0; scoreEl.textContent='0'; coinsEl.textContent='0'; spawnTimer=0; spawnInterval=900;
+      running = true; overlay.style.display='none'; lastTime = null;
+    }
+
+    function endGame(){ running = false; overlay.style.display='flex'; overlay.innerHTML = `<div class="big">Game Over</div><div class="small">Score: ${score} • Coins: ${coins}</div><button id="startBtn2" class="btn" style="pointer-events:auto">Restart</button>`;
+      document.getElementById('startBtn2').addEventListener('click', ()=>{ overlay.innerHTML = ''; overlay.appendChild(startBtn); overlay.appendChild(document.createElement('div')); location.reload(); });
+    }
+
+    // wire start
+    startBtn.addEventListener('click', ()=>{ overlay.style.display='none'; startGame(); });
+
+    // init player pos
+    x = laneToX(lane);
+    playerEl.style.left = x + 'px';
+
+    requestAnimationFrame(gameLoop);
   </script>
 </body>
 </html>
