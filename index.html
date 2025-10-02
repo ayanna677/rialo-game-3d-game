@@ -133,8 +133,7 @@ function checkPassword() {
   let userPass = passwordInput.value;
 
   if (userPass === correctPassword) {
-    document.getElementById("loginScreen").style.display = "none";
-    // Your game can start here
+    window.location.href = "game.html"; // Redirect to working game
   } else {
     document.getElementById("errorMsg").style.display = "block";
   }
